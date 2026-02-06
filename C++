@@ -1,0 +1,536 @@
+#include<iostream>
+#include<cstring>
+#include<iomanip>
+
+using namespace std;
+
+    struct Accessories{
+    string accessoriesCode;
+    string accessoriesName;
+    float accessoriesPrice;
+    float accessories_default_sales;
+    int accessories_default_daysales;
+        
+    Accessories *next;
+    };
+
+    struct accessoriesCart{ //Linked List for accessories cart
+    string cartAcode;
+    string cartAname;
+    float cartAprice;
+    int cartAqty;
+    accessoriesCart *next;
+    };
+
+    struct ItemSummary {
+    string name;
+    int qty;
+    };
+
+    struct sales{
+        float plasticPrice;
+        float total;
+        int totalQty;
+    };
+
+
+    void menu(Accessories *temp, Accessories *head){
+
+        cout << "\n=============================== Accessories Menu ==============================" << endl;
+        cout << left << setw(10) << "Code" << setw(35) << "Accessories \t \t \t \t \t \t Price (RM)" << endl;
+        cout << "---------------------------------------------------------------------------" << endl;
+
+        temp = head;
+        while (temp != NULL) {
+            cout << setw(10) << temp->accessoriesCode << setw(35) << temp->accessoriesName << fixed << setprecision(2) << setw(18) <<"\t"<< temp->accessoriesPrice << endl;
+            temp = temp->next;
+        }
+
+        cout << "----------------------------------------------------------------------------" << endl;
+    };
+
+class InventoryManage{
+    private:
+    int choice;
+    char continuee;
+    Accessories *head, *temp, *prev, *ins;
+    
+    public:
+    InventoryManage(){
+        //place to set the ptr and also the default item
+        head = new Accessories;
+        string accessoriesCode[] = {"SD01", "SD02", "SD03", "SD04", "BB01", "BB02", "BB03", "HM01", "HM02", "HM03"};
+        string accessoriesName[] = {"Screwdriver(Slotted)", "Screwdriver(Phillips)", "Screwdriver(Torx)", "Screwdriver(Allen)", "Bolts(Hex Head 5packs)", "Bolts(Round Head 5packs)", "Bolts(Phillips 5packs)", "Claw and Flaming Hammers", "Cross Peen Hammer", "Sledge Hammer"};
+        float accessoriesPrice[] = {10.00, 11.00, 12.00, 12.50, 5.00, 5.00, 5.50, 15.00, 15.50, 14.50 };
+        float accessories_default_sales[] = {30, 45, 50, 60, 45, 77, 55, 98, 99, 104};
+        int accessories_default_daysales[] ={5, 6, 3, 7, 5, 7, 8, 3, 4, 6};
+        int i;
+
+        head -> accessoriesCode = accessoriesCode[0];
+        head -> accessoriesName = accessoriesName[0];
+        head -> accessoriesPrice = accessoriesPrice[0];
+        head -> accessories_default_sales= accessories_default_sales[0];
+        head -> next = NULL;
+        temp = head;
+
+        for (i=1; i<10; i++){
+            temp -> next = new Accessories;
+            temp = temp -> next;
+            temp -> accessoriesCode = accessoriesCode[i];
+            temp -> accessoriesName = accessoriesName[i];
+            temp -> accessoriesPrice = accessoriesPrice[i];
+            temp -> accessories_default_sales = accessories_default_sales[i];
+            temp ->accessories_default_daysales = accessories_default_daysales[i];
+            temp -> next = NULL;
+        }
+    }
+
+    void verifyManager(){
+            string *id = new string;
+            string password;
+            int choiceM;
+            
+
+            cout << "Please enter your manager ID   : \n";
+            cin >> *id;
+            do{
+                cout << "Please enter password  : \n";
+                cin >> password;
+
+                if (password == "Lozhardware123"){
+            
+                do{
+                    cout << "===== LOZHARDWARE HARDWARE STORE MENU ====="<<endl;
+                    cout << "1. Add Accessories"<<endl;
+                    cout << "2. Delete Accessories"<<endl;
+                    cout << "3. Manage Accessories"<<endl;
+                    cout << "4. Manager: View Sales By Day"<<endl;
+                    cout << "5. Manager: View Monthly Totals & Item Summary"<<endl;
+                    cout << "6. Exit"<<endl;
+                    cout << "Enter your choice(1-5) :";
+                    cin >> choiceM;
+                
+                while(choice >7){
+                    cout << "Invalid selection. Please reselect : ";
+                    cin>>choice;
+                }
+                switch (choiceM)
+                {
+                case 1:
+                    addAccessories();
+                    break;
+                case 2:
+                    deleteAccessories();
+                    break;
+                case 3:
+                    manageAccessories();
+                    break;
+                case 4:
+                    salesToday();
+                    break;
+                case 5:
+                    viewMonthlySales();
+                    break;
+                case 6:
+                    return;
+                default:
+                    break;
+                }
+            }while (continuee == 'Y' || continuee == 'y');
+        } else {
+            cout << "Invalid Login Attempt. Please try again." << endl << endl;
+            }
+        }while (password != "Lozhardware123");
+    
+            delete id;
+    }
+
+        void addAccessories(){
+            cout << "------Current Available Accessories------"<< endl;
+            menu(temp, head);
+            string newAccessoriesCode;
+            cout <<"Enter new Accessories Code  :"<< endl;
+            cin >> newAccessoriesCode;
+
+            //check whether the accessoriesCode is exist dy
+            temp = head;
+            while(temp != NULL){
+                if (temp-> accessoriesCode == newAccessoriesCode){
+                    cout << "Your accessories code"<< newAccessoriesCode << "has already exist" << endl;
+                    cout << "Do you wish to add new accessorries again? (Y/N)"<< endl;
+                    cin >> continuee;
+                    return;
+                }
+                temp= temp->next;
+            }
+
+            ins = new Accessories;
+            ins -> accessoriesCode = newAccessoriesCode;
+            cout << "Enter new accessories name :"<< endl;
+            cin.ignore();
+            getline(cin, ins-> accessoriesName);
+            cout << "Emter new accessories price" << endl;
+            cin >> ins->accessoriesPrice;
+            ins-> next = NULL;
+
+            if(head == NULL){
+                head = ins; // to check if the head is empty, then ins = head
+            }else {
+                temp = head;
+                while (temp->next != NULL)
+                {
+                    temp = temp->next;
+                }
+                temp->next = ins; // Append new accessories at the end of the list
+            }
+            cout << "New accessories addded successful"<< endl;
+
+            cout << "You are done in this part do you wish to continue the program(Y/N)     :"<<endl;
+            cin >> continuee;
+            cout <<"\n"<< endl;
+        }
+
+        void deleteAccessories(){
+            
+            cout << "------Current Available Accessories------"<< endl;
+            menu(temp, head);
+            
+            string target;
+            cout << "Enter accessories code :"<< endl;
+            cin >> target;
+
+            temp = head;
+            // searching the code using linear search
+            while((temp!=NULL)&&(temp->accessoriesCode!=target)){
+                prev = temp;
+                temp = temp->next;
+            }
+            //if code correct then can delete the accessories
+            if(temp != NULL && temp->accessoriesCode==target){
+                if(head->accessoriesCode==target){
+                    head= head->next;
+                delete temp;
+            }else {
+                prev->next=temp->next;
+                delete temp;
+                
+            }
+            
+            cout << "You are done in this part do you wish to continue the program(Y/N)     :"<<endl;
+            cin >> continuee;
+            cout <<"\n" << endl;
+
+            }else {
+                cout << "You enetered and invalid code... Please try again" << endl;
+                cout << "If you still want to continue delete accessories, enter (Y/N)  :";
+                cin >> continuee;
+                cout << "\n" << endl;
+            }
+        }
+
+        void manageAccessories(){
+            menu(temp,head);
+
+            string target;
+            cout << "Enter accessories code:"<< endl;
+            cin >> target;
+
+            temp=head;
+            //same like what i do in function dlt accessories
+            while((temp!=NULL)&&(temp->accessoriesCode!=target)){
+                prev = temp;
+                temp = temp->next;
+            }
+
+            //while the code is correct
+            if(temp!=NULL && temp->accessoriesCode == target){
+                cout<<"~~~~~~~~~~~~~~~You Have Selected "<<temp->accessoriesCode<<"\t"<<temp->accessoriesName<<"~~~~~~~~~~~~~~~"<<endl;
+                cout<<"Please enter a new price : ";
+                cin>>temp->accessoriesPrice;
+                cout << "Accessories Price updated successfully." << endl;
+
+                cout << "You are done in this part do you wish to continue the program(Y/N)     :"<<endl;
+                cin>>continuee;
+                cout<<"\n"<<endl;
+            }else {
+                cout << "You enetered and invalid code... Please try again" << endl;
+                cout << "If you still want to continue delete accessories, enter (Y/N)  :";
+                cin>>continuee;
+                cout<<"\n"<<endl;
+            }
+        }
+
+        //show daily sales report
+        //total earnings based on the accessories_default_sales
+    void salesToday(){
+        float todayEarning= 0.0;//initialize total eaarnings for the day
+        temp = head;
+
+        cout << "------------------- Sales Report for the Day -------------------" << endl;
+        cout << "Code\tAccessories Name\t\t\tPrice\tQty\tTotal (RM)" << endl;
+
+        while (temp != nullptr){
+            float totalSalesAmount = temp->accessories_default_daysales * temp->accessoriesPrice;
+            todayEarning += totalSalesAmount; //accumulative today total sales
+            //display eaach item sold today
+            cout << left << setw(8) << temp->accessoriesCode
+                 << setw(32) << temp->accessoriesName
+                 << fixed << setprecision(2)
+                 << setw(8) << temp->accessoriesPrice
+                 << setw(8) << temp->accessories_default_daysales
+                 << totalSalesAmount << endl;
+            temp = temp->next;
+        }
+
+        cout << "-----------------------------------------------------------------------" << endl;
+        cout << "Total Earnings Today: RM " << fixed << setprecision(2) << todayEarning << endl;
+
+        cout << "\nYou are done, Manager! If you want to continue using the program, press [y / Y] : ";
+        cin >> continuee;
+        cout << "\n----------------------------------------------------------------------------\n\n\n\n\n\n\n";
+    }
+    //show monthly sales
+    //calculates the total monthly sales per item based on the accessories_default_sales field,and output the total earnings
+    void viewMonthlySales() {
+     
+        float totalEarning = 0.0;
+
+        temp=head;
+        cout << "------------------- Sales Report for this month -------------------" << endl;
+        cout << "Code\tAccessories Name\t\t\tPrice\tSales\tTotal Sales Amount (RM)" << endl;
+
+        // traverse all accessories to compute monthly sales
+
+        while (temp != nullptr)
+            {
+               float totalSalesAmount = temp->accessories_default_sales * temp->accessoriesPrice;
+                totalEarning += totalSalesAmount;
+                cout << left << setw(8) << temp->accessoriesCode << setw(24) << temp->accessoriesName << fixed << setprecision(3)
+                << setw(8) << temp->accessoriesPrice << setw(8)<< temp->accessories_default_sales<< totalSalesAmount << endl;
+                temp = temp->next;
+            }
+
+        cout << "-----------------------------------------------------------------------" << endl;
+        cout << "Total Earnings: RM " << fixed << setprecision(2) << totalEarning << endl;
+
+        cout << "\nYou are done, Manager! If you want to continue using the program, press [y / Y] : ";
+        cin >> continuee;
+        cout << "\n" << endl;
+
+
+    }
+
+
+
+        Accessories* get_head()
+        {
+            return head;
+        }
+
+        Accessories* get_temp()
+        {
+            return temp;
+        }
+}M;
+    
+    
+
+class Customer{
+    struct cusInfo{
+        string cusName;
+        string cusEmail;
+        string cusPhoneNo;
+    };
+
+    private:
+    string cus_name;
+    Accessories *head = M.get_head();
+    Accessories *temp = M.get_temp();
+    
+    accessoriesCart *cartHead;
+
+    
+    public:
+    void getCustomerInfo(){
+
+        cusInfo customer;
+        cin.ignore();
+
+        cout<< "Welcome to LozHardware store " << endl;
+        cout<< "-----------------------------" << endl;
+        cout<< "Please enter your personal details to get membership point in our shop(Its doesn't have any upfront fee)" << endl;
+        cout<< "Please Enter your name   : ";
+        getline(cin, customer.cusName);
+        cout<< "Please enter your email  : ";
+        getline(cin, customer.cusEmail);
+
+        cout<< "Please enter your phone number   : ";
+        getline(cin, customer.cusPhoneNo);
+        
+        
+
+    }
+
+
+    void order(){
+        char choiceO, choiceP;//choiceO is for ordering acs, choiceP is for plastic bag
+        string cusOrder;
+        int quantity, totalQty=0;
+        float plasticPrice=0.50;
+
+        menu(temp, head);
+        do{
+        
+        cout << "Enter the code of accesories:" << endl;
+        cin >> cusOrder;
+
+            temp = head;
+            while ((temp != NULL) && (temp->accessoriesCode != cusOrder))//used to search the linked list of accessories to check whether it exist or not 
+            {
+                temp = temp->next;
+            }
+
+        if(temp!= NULL && temp->accessoriesCode == cusOrder){
+            cout << "How many you want to buy?" << endl;
+            cout << "Enter here:";
+            cin >> quantity;
+            
+
+            addToCart(temp,quantity);//send a linked list to store cus order
+            temp->accessories_default_sales += quantity;
+            temp->accessories_default_daysales += quantity;
+            totalQty += quantity;
+        }else{
+            cout << "This Accessories Code does not exist......" << endl;
+        }
+
+            cout << "Would you like to continue shop?(Y/N)";
+            cin >> choiceO;
+        }while(choiceO == 'Y' || choiceO == 'y');
+
+        cout << "Would you like to get for plactic bag(Y/N)";
+        cin >> choiceP;
+
+
+        float total = calculation(plasticPrice);
+        receipt(total);
+        
+        
+    }
+
+
+    void addToCart(Accessories *temp, int quantity)
+    {
+        accessoriesCart* cartTemp=cartHead;
+        
+        // Check if the accessories is already in the cart
+        while (cartTemp != nullptr)
+        {
+            if (cartTemp->cartAcode == temp->accessoriesCode)
+            {
+                cartTemp->cartAqty += quantity; // If found, it updates the quantity
+                return;
+            }
+            cartTemp = cartTemp->next;
+        }
+
+        // If not found, create a new cart
+        accessoriesCart* cart = new accessoriesCart;
+        cart->cartAcode = temp->accessoriesCode;
+        cart->cartAname = temp->accessoriesName;
+        cart->cartAprice = temp->accessoriesPrice;
+        cart->cartAqty = quantity;
+        cart->next = nullptr;
+
+        if (cartHead == nullptr)
+        {
+            cartHead = cart;
+        }
+        else
+        {
+            cartTemp = cartHead;
+            while (cartTemp->next != nullptr)
+            {
+                cartTemp = cartTemp->next;
+            }
+            cartTemp->next = cart;
+        }
+    }
+
+    float calculation(float plasticPrice){
+        accessoriesCart *temp;
+        temp = cartHead;
+
+        int accessoriesQty;
+        float totalAccessoriesPrice =0.00;
+
+        while(temp != nullptr){
+            accessoriesQty = temp->cartAqty;
+            totalAccessoriesPrice += temp->cartAprice * accessoriesQty;
+            temp = temp->next;
+        }
+            return totalAccessoriesPrice + plasticPrice;
+    }
+
+    void receipt(float total){
+
+
+        cout << "\n=============================== Receipt ==============================" << endl;
+        cout << "\n----------------------------------------------------------------------" << endl;
+        accessoriesCart* temp = cartHead;
+        cout << setw(15) << "Code" << setw(40) << "Accessories" << setw(13) << "Price(RM)" << setw(10) << "Quantity" << endl << endl;
+
+        while (temp != nullptr)
+        {
+            cout << setw(15) << temp->cartAcode << setw(40) << left << temp->cartAname << fixed << setprecision(2)
+             << setw(13) << temp->cartAprice << setw(10) << temp->cartAqty << endl;
+            temp = temp->next;
+        }
+
+            cout << "\nTotal: RM " << fixed << setprecision(2) << total << endl;
+            cout << "----------------------------------------------------------------------------\n\n\n\n\n\n\n";
+
+        
+    }
+}C;
+
+
+int main(){
+    char choice;
+    int count=0;
+
+    do{
+        cout << "-----------------------------"<< endl;
+        cout << "Welcome to LozHardware store "<< endl;
+        cout << "-----------------------------"<< endl;
+        cout <<"What's your ROLE"<< endl;
+        cout <<"A. Customer" << endl;
+        cout <<"B. Manager" << endl;
+        cout <<"Please select   :" << endl;
+        cin >> choice;
+
+        if (choice == 'A' || choice == 'a'){
+            //fucntion for customer
+            C.getCustomerInfo();
+            C.order();
+
+        }else if ( choice == 'B' || choice == 'b'){
+            M.verifyManager();
+            continue;
+            
+        }else {
+            count++;
+            if (count < 3){
+                cout << "INVALID OPTION PLEASE READ AND SELECT AGAIN" << endl;
+            }
+            else{
+                cout << "You're failed to use, Please re-run the system" << endl;
+                break;
+            }
+        }
+    }while (count < 3 && (choice != 'A' || choice != 'a' || choice != 'B' || choice != 'b' ));
+
+    return 0;
+    
+
+}
